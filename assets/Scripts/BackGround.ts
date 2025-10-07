@@ -25,7 +25,7 @@ export class BackGround extends Component {
         let p1 =this.bg01.position;
         let p2 =this.bg02.position;
         //判断是否离开这个屏幕
-        if(this.bg01.position.y<0-852){
+        if(this.bg01.position.y<-852){
             this.bg01.setPosition(p2.x,p2.y+852,p2.z);
         }
          if(this.bg02.position.y<-852){
