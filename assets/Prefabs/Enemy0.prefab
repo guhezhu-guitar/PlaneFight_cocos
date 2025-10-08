@@ -250,6 +250,9 @@
     "anim": {
       "__id__": 7
     },
+    "hp": 1,
+    "animHit": "",
+    "animDown": "Enemy0_Down",
     "_id": ""
   },
   {
@@ -314,12 +317,12 @@
     "__prefab": {
       "__id__": 15
     },
-    "enabledContactListener": false,
+    "enabledContactListener": true,
     "bullet": false,
     "awakeOnLoad": true,
     "_group": 1,
     "_type": 1,
-    "_allowSleep": true,
+    "_allowSleep": false,
     "_gravityScale": 1,
     "_linearDamping": 0,
     "_angularDamping": 0,
@@ -345,6 +348,6 @@
       "__id__": 0
     },
     "fileId": "28OJHntQBGBqemTct9L9wW",
-    "targetOverrides": null
+    "targetOverrides": []
   }
 ]

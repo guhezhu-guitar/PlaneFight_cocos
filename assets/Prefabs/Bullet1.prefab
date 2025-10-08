@@ -66,7 +66,7 @@
       "y": 0,
       "z": 0
     },
-    "_id": "93Rt+AgkdOx7mlnt++ZAMg"
+    "_id": ""
   },
   {
     "__type__": "cc.UITransform",
@@ -90,7 +90,7 @@
       "x": 0.5,
       "y": 0.5
     },
-    "_id": "edURiv+c9HEplcgeEIHK2d"
+    "_id": ""
   },
   {
     "__type__": "cc.CompPrefabInfo",
@@ -135,7 +135,7 @@
     "_isTrimmedMode": true,
     "_useGrayscale": false,
     "_atlas": null,
-    "_id": "f5HxcG8PRDzafL14gqe4+7"
+    "_id": ""
   },
   {
     "__type__": "cc.CompPrefabInfo",
@@ -154,7 +154,7 @@
       "__id__": 7
     },
     "speed": 500,
-    "_id": "77xoAiKnRF9aSbSakqFZLK"
+    "_id": ""
   },
   {
     "__type__": "cc.CompPrefabInfo",
@@ -188,7 +188,7 @@
       "width": 9,
       "height": 16.2
     },
-    "_id": "18tsrM3nhOlbrtCq7gw++v"
+    "_id": ""
   },
   {
     "__type__": "cc.CompPrefabInfo",
@@ -211,7 +211,7 @@
     "awakeOnLoad": true,
     "_group": 1,
     "_type": 1,
-    "_allowSleep": true,
+    "_allowSleep": false,
     "_gravityScale": 1,
     "_linearDamping": 0,
     "_angularDamping": 0,
@@ -222,7 +222,7 @@
     },
     "_angularVelocity": 0,
     "_fixedRotation": false,
-    "_id": "91ipGNIFBPZZw7/IDhirXt"
+    "_id": ""
   },
   {
     "__type__": "cc.CompPrefabInfo",
@@ -237,8 +237,6 @@
       "__id__": 0
     },
     "fileId": "a3siWv/LxNIrx3RqpgEobA",
-    "instance": null,
-    "targetOverrides": null,
-    "nestedPrefabInstanceRoots": null
+    "targetOverrides": null
   }
 ]

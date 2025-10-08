@@ -960,7 +960,7 @@
     "position1": {
       "__id__": 19
     },
-    "shootType": 1,
+    "shootType": 0,
     "bullet2Prefab": {
       "__uuid__": "38f1349b-a507-4584-9024-51acba6d0f84",
       "__expectedType__": "cc.Prefab"
