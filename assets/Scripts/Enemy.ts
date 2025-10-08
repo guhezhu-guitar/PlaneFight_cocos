@@ -1,19 +1,21 @@
-import { _decorator, Animation, animation, Collider2D, Component, Contact2DType, IPhysics2DContact, Node } from 'cc';
+import { _decorator, Animation, animation, CCString, Collider2D, Component, Contact2DType, IPhysics2DContact, log, Node } from 'cc';
+import { Bullet } from './Bullet';
 const { ccclass, property } = _decorator;
 
 @ccclass('Enemy')
 export class Enemy extends Component {
     @property
     speed:number = 300;
+    //对动画组件的引用
     @property(Animation)
     anim:Animation =null;
 
     @property
     hp:number = 1;
     //不同动画
-    @property(String)
+    @property(CCString)
     animHit:string = "";
-    @property(String)
+    @property(CCString)
     animDown:string = "";
 
     collider:Collider2D =null;
@@ -29,7 +31,7 @@ export class Enemy extends Component {
     }
 
     update(deltaTime: number) {
-        if(this.hp>0){
+        if(this.hp > 0){
              const p = this.node.position;
         this.node.setPosition(p.x,p.y-deltaTime*this.speed,p.z);
         }
@@ -42,7 +44,9 @@ export class Enemy extends Component {
     //on方法后加的东西是对子弹进行的一个销毁
     onBeginContact(selfCollider:Collider2D,otherCollider:Collider2D,contact:IPhysics2DContact|null){
         //对碰撞的子弹进行一个销毁
-        otherCollider.enabled =false;
+        if(otherCollider.getComponent(Bullet)){
+            otherCollider.enabled =false;       //在飞机和飞机之间的碰撞之后会禁用彼此之间的collider(此时是禁用子弹的collider)
+        }
         this.hp -=1;
         //判断此时的血量
         if(this.hp>0){
@@ -50,13 +54,12 @@ export class Enemy extends Component {
         }else{
             this.anim.play(this.animDown);
         }
-        this.anim.play();
-         this.collider = this.getComponent(Collider2D);
          //适用于小飞机
         // if(this.collider){
         //     //禁用collider
         //     this.collider.enabled =false;
         // }
+
         //当血量为0时候销毁
         if(this.hp<=0){
             //适用于所有的飞机
@@ -64,15 +67,16 @@ export class Enemy extends Component {
             //禁用collider
             this.collider.enabled =false;
             }
+            //血量小于0的时候飞机进行销毁
             this.schedule(function(){
                 this.node.destroy();
             },1);
+           
         }
     }
-
         protected onDestroy(): void {
          //注册单个碰撞体的回调函数
-        this.collider = this.getComponent(Collider2D);
+        // this.collider = this.getComponent(Collider2D);
         if(this.collider){
             this.collider.off(Contact2DType.BEGIN_CONTACT,this.onBeginContact,this);
         }
