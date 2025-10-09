@@ -1,6 +1,7 @@
 import { _decorator, Animation, CCString, Collider2D, Component, Contact2DType, EventKeyboard, EventTouch, Input, input, instantiate, IPhysics2DContact, Node, Prefab, Sprite, Vec3 } from 'cc';
 import { Reward, RewardType } from './Reward';
 import { GameManager } from './GameManager';
+import { LifeCountUI } from './UI/LifeCountUI';
 const { ccclass, property } = _decorator;
 
 //表示两种子弹的状态
@@ -65,6 +66,10 @@ export class Player extends Component {
     @property
     twoShootTime: number =5;
     twoShootTimer:number =0; //设置的计时器
+
+    //设置玩家血量的ui
+    @property(LifeCountUI)
+    lifeCountUI:LifeCountUI = null;
     
     protected onLoad(): void {
         input.on(Input.EventType.TOUCH_MOVE,this.onTouchMove,this);
@@ -141,7 +146,9 @@ export class Player extends Component {
             this.isinvincible =true;
             //无敌时间进行重置
             this.invincibleTimer =0;
-            this.lifeCount -=1;
+            // this.lifeCount -=1;          //更改为下面的代码
+            this.changeLifeCount(-1);
+
             //血量变化时进行的动画播放
             if(this.lifeCount >0){
                 this.anim.play(this.animHit);
@@ -158,8 +165,14 @@ export class Player extends Component {
             }
         }
 
-    start() {
+        //设置一个方法,专门进行玩家血量的更改
+        changeLifeCount(count:number){
+            this.lifeCount += count;
+            this.lifeCountUI.updateUI(this.lifeCount);
+        }
 
+    start() {
+        this.lifeCountUI.updateUI(this.lifeCount);      //开始运行时将玩家血量传递到ui中
     }
 
 
