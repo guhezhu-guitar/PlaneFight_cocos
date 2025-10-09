@@ -1,10 +1,13 @@
-import { _decorator, Animation, CCString, Collider2D, Component, Contact2DType, EventKeyboard, EventTouch, Input, input, instantiate, IPhysics2DContact, Node, Prefab, Vec3 } from 'cc';
+import { _decorator, Animation, CCString, Collider2D, Component, Contact2DType, EventKeyboard, EventTouch, Input, input, instantiate, IPhysics2DContact, Node, Prefab, Sprite, Vec3 } from 'cc';
+import { Reward, RewardType } from './Reward';
+import { GameManager } from './GameManager';
 const { ccclass, property } = _decorator;
 
 //表示两种子弹的状态
-enum shootType{
+ enum shootType{
     OneShoot,
-    TwoShoot
+    TwoShoot,
+    NONE
 };
 
 @ccclass('Player')
@@ -58,6 +61,10 @@ export class Player extends Component {
     invincibleTimer:number =0;
     //设置表示是否处于无敌时间的状态
     isinvincible:boolean =false;
+    //设置双发的奖励时间
+    @property
+    twoShootTime: number =5;
+    twoShootTimer:number =0; //设置的计时器
     
     protected onLoad(): void {
         input.on(Input.EventType.TOUCH_MOVE,this.onTouchMove,this);
@@ -72,20 +79,78 @@ export class Player extends Component {
     //on方法后加的东西是对子弹进行的一个销毁
     //方法回调之后是对于碰撞之后的动作进行编写
         onBeginContact(selfCollider:Collider2D,otherCollider:Collider2D,contact:IPhysics2DContact|null){
+            const reward = otherCollider.getComponent(Reward);
+            if(reward){
+                this.onContactToReward(reward);
+                // //此时是奖励物品
+                // switch(reward.rewardType){
+                //     case RewardType.TwoShoot:
+                //         this.transitionToTwoShoot();
+                //         break;
+                //     case RewardType.Boom:
+                //         break;
+                // }
+            }else{
+                //此时是碰撞的敌人
+           this.onContatctToEnemy();    //调用面向敌人的碰撞
+            }
+            
+        }
+        //设置上一个奖励物品,为了应对bug
+        lastReward:Reward =null;
+
+        onContactToReward(reward){
+            //防止多次触发奖励物品
+            if(reward == this.lastReward){
+                return;
+            }
+            this.lastReward =reward;
+            
+             //此时是奖励物品
+            switch(reward.rewardType){
+                case RewardType.TwoShoot:
+                 this.transitionToTwoShoot();
+                    break;
+                case RewardType.Boom:
+                    GameManager.getInstance().AddBoom();        //添加炸弹
+                        break;
+        }
+        //将奖励物品进行销毁
+        reward.getComponent(Collider2D).enabled =false;     //将碰撞器禁用
+        reward.getComponent(Sprite).enabled =false;         //将显示禁用
+    }
+        //切换双发模式
+        transitionToTwoShoot(){
+            //切换设计模式  
+            this.shootType = shootType.TwoShoot;
+            this.twoShootTimer = 0;
+
+        }
+        //切换单发模式
+        transitionToOneShoot(){
+        this.shootType = shootType.OneShoot;
+            this.twoShootTimer = 0;
+        }
+
+
+        //面向敌人的碰撞
+        onContatctToEnemy(){
             //处于无敌状态直接跳过
             if(this.isinvincible)return;
 
             this.isinvincible =true;
+            //无敌时间进行重置
+            this.invincibleTimer =0;
             this.lifeCount -=1;
             //血量变化时进行的动画播放
             if(this.lifeCount >0){
                 this.anim.play(this.animHit);
-                console.log("this.anim.play(this.animHit)")
             }else{
                 this.anim.play(this.animDown);
             }
             //血量为0的时候摧毁
             if(this.lifeCount<=0){
+                this.shootType =shootType.NONE; //修改子弹的发射类型
                 if(this.collider){  //如果是自身的collider就运行
                     this.collider.enabled =false;   //将自身的collider进行禁用
                 }
@@ -172,7 +237,12 @@ export class Player extends Component {
     }
 }
     twoShoot(deltaTime: number){
-        this.shootTime += deltaTime;
+        this.twoShootTimer +=deltaTime;     //控制双发子弹的射击间隔的
+        if(this.twoShootTimer>this.twoShootTime){
+            this.transitionToOneShoot();    //切换成单发的模式
+        }
+
+        this.shootTime += deltaTime;        //控制每发子弹的射击间隔的
         if(this.shootTime>=this.shootRate){
             this.shootTime = 0;  //将发射时间归零
             //要实例化两个子弹

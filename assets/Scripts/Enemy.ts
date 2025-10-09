@@ -1,4 +1,4 @@
-import { _decorator, Animation, animation, CCString, Collider2D, Component, Contact2DType, IPhysics2DContact, log, Node } from 'cc';
+import { _decorator, Animation, animation, CCString, Collider2D, Component, Contact2DType, IPhysics2DContact, log, Node, Sprite } from 'cc';
 import { Bullet } from './Bullet';
 const { ccclass, property } = _decorator;
 
@@ -46,6 +46,7 @@ export class Enemy extends Component {
         //对碰撞的子弹进行一个销毁
         if(otherCollider.getComponent(Bullet)){
             otherCollider.enabled =false;       //在飞机和飞机之间的碰撞之后会禁用彼此之间的collider(此时是禁用子弹的collider)
+            otherCollider.getComponent(Sprite).enabled =false;      //将sprite组件进行禁用,让子弹不进行显性
         }
         this.hp -=1;
         //判断此时的血量

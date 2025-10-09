@@ -2,12 +2,12 @@
   "ver": "2.0.4",
   "importer": "animation-clip",
   "imported": true,
-  "uuid": "dcc92fb3-b150-4c1e-bd22-e83e22dc8803",
+  "uuid": "d8dbb7ce-be8a-4a1b-8094-40bc83ee7621",
   "files": [
     ".bin"
   ],
   "subMetas": {},
   "userData": {
-    "name": "Play_Hit"
+    "name": "Reward_idle"
   }
 }

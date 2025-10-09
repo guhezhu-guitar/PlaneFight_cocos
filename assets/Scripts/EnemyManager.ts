@@ -19,11 +19,21 @@ export class EnemyManager extends Component {
     enemy2SpawnRate:number =10;
     @property(Prefab)
     enemy2Prefab:Prefab = null;
+
+    //奖励物品的生成
+     @property
+    rewardSpawnRate:number =15;
+    @property(Prefab)
+    reward1Prefab:Prefab = null;
+    @property(Prefab)
+    reward2Prefab:Prefab = null;
     start() {
         //设置定时器
         this.schedule(this.enemy0Spown,this.enemy0SpawnRate);
         this.schedule(this.enemy1Spown,this.enemy1SpawnRate);
         this.schedule(this.enemy2Spown,this.enemy2SpawnRate);
+        //奖励物品
+         this.schedule(this.rewardSpown,this.rewardSpawnRate);
     }
 
     update(deltaTime: number) {
@@ -39,7 +49,7 @@ export class EnemyManager extends Component {
 
     //小飞机生成
     enemy0Spown(){
-        this.enemySpawn(this.enemy0Prefab,-215,215,450);
+        this.objectSpawn(this.enemy0Prefab,-215,215,450);
         // //实例化飞机
         // const enemy0 =instantiate(this.enemy0Prefab);
         // this.node.addChild(enemy0);
@@ -51,7 +61,7 @@ export class EnemyManager extends Component {
 
     //中飞机生成
        enemy1Spown(){
-         this.enemySpawn(this.enemy1Prefab,-200,200,475);
+         this.objectSpawn(this.enemy1Prefab,-200,200,475);
         // //实例化飞机
         // const enemy1 =instantiate(this.enemy1Prefab);
         // this.node.addChild(enemy1);
@@ -63,7 +73,7 @@ export class EnemyManager extends Component {
 
     //大飞机生成
        enemy2Spown(){
-         this.enemySpawn(this.enemy2Prefab,-155,155,560);
+         this.objectSpawn(this.enemy2Prefab,-155,155,560);
         // //实例化飞机
         // const enemy2 =instantiate(this.enemy2Prefab);
         // this.node.addChild(enemy2);
@@ -72,9 +82,21 @@ export class EnemyManager extends Component {
         // enemy2.setPosition(randomX,560,0);
 
     }
+    
+    //奖励物品的生成
+       rewardSpown(){
+       const randomNumber = math.randomRangeInt(0,2);       //设置0-2之间的随机数
+       let prefab =null;
+       if(randomNumber == 0){
+        prefab = this.reward1Prefab;
+       }else{
+        prefab =this.reward2Prefab;
+       }
+         this.objectSpawn(prefab,-207,207,474);
+       }
 
-    //设置一个方法,总管这些飞机的生成
-    enemySpawn(enemyPrefab:Prefab,minX:number,maxX:number,Y:number){
+    //设置一个方法,总管这些飞机的生成 ==>有了奖励物品之后该方法是控制物品的生成
+    objectSpawn(enemyPrefab:Prefab,minX:number,maxX:number,Y:number){
          const enemy =instantiate(enemyPrefab);
         this.node.addChild(enemy);
         //生成随机数.从-200到200之间,作为x轴
