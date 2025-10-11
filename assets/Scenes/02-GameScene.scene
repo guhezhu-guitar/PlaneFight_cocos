@@ -2020,7 +2020,7 @@
         "__id__": 54
       },
       {
-        "__id__": 85
+        "__id__": 99
       }
     ],
     "_prefab": null,
@@ -2289,7 +2289,9 @@
     "gameMusic": null,
     "cuntinueButton": null,
     "quitButton": null,
-    "pauseUI": null,
+    "pauseUI": {
+      "__id__": 85
+    },
     "_id": "580RjnHDFLsLdCrEcZIeOp"
   },
   {
@@ -3279,34 +3281,16 @@
     "_id": "60u7emi8pFo7SvCTYuAN9V"
   },
   {
-    "__type__": "cc.Widget",
+    "__type__": "c4eb0KI6ApEAKBJjk5wnXnZ",
     "_name": "",
     "_objFlags": 0,
     "__editorExtras__": {},
     "node": {
-      "__id__": 51
+      "__id__": 86
     },
     "_enabled": true,
     "__prefab": null,
-    "_alignFlags": 9,
-    "_target": null,
-    "_left": 2.4890000000000043,
-    "_right": 0,
-    "_top": 17.264999999999986,
-    "_bottom": 0,
-    "_horizontalCenter": 0,
-    "_verticalCenter": 0,
-    "_isAbsLeft": true,
-    "_isAbsRight": true,
-    "_isAbsTop": true,
-    "_isAbsBottom": true,
-    "_isAbsHorizontalCenter": true,
-    "_isAbsVerticalCenter": true,
-    "_originalWidth": 0,
-    "_originalHeight": 0,
-    "_alignMode": 2,
-    "_lockFlags": 0,
-    "_id": "86kH05QGlJs7hudIvXZfID"
+    "_id": "83D+f4mXhGN6YGRjQ1a/mD"
   },
   {
     "__type__": "cc.Node",
@@ -3333,7 +3317,7 @@
         "__id__": 98
       },
       {
-        "__id__": 99
+        "__id__": 85
       }
     ],
     "_prefab": null,
@@ -3790,16 +3774,34 @@
     "_id": "5fqcXCpXpOnaCE35WIaZKM"
   },
   {
-    "__type__": "c4eb0KI6ApEAKBJjk5wnXnZ",
+    "__type__": "cc.Widget",
     "_name": "",
     "_objFlags": 0,
     "__editorExtras__": {},
     "node": {
-      "__id__": 86
+      "__id__": 51
     },
     "_enabled": true,
     "__prefab": null,
-    "_id": "83D+f4mXhGN6YGRjQ1a/mD"
+    "_alignFlags": 9,
+    "_target": null,
+    "_left": 2.4890000000000043,
+    "_right": 0,
+    "_top": 17.264999999999986,
+    "_bottom": 0,
+    "_horizontalCenter": 0,
+    "_verticalCenter": 0,
+    "_isAbsLeft": true,
+    "_isAbsRight": true,
+    "_isAbsTop": true,
+    "_isAbsBottom": true,
+    "_isAbsHorizontalCenter": true,
+    "_isAbsVerticalCenter": true,
+    "_originalWidth": 0,
+    "_originalHeight": 0,
+    "_alignMode": 2,
+    "_lockFlags": 0,
+    "_id": "86kH05QGlJs7hudIvXZfID"
   },
   {
     "__type__": "cc.UITransform",
