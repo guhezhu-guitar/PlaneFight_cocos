@@ -257,6 +257,7 @@
     "hp": 3,
     "animHit": "Enemy1_Hit",
     "animDown": "Enemy1_Down",
+    "score": 300,
     "_id": ""
   },
   {
@@ -377,7 +378,6 @@
       "__id__": 0
     },
     "fileId": "28OJHntQBGBqemTct9L9wW",
-    "instance": null,
     "targetOverrides": []
   }
 ]

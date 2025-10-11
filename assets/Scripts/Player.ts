@@ -1,11 +1,11 @@
-import { _decorator, Animation, CCString, Collider2D, Component, Contact2DType, EventKeyboard, EventTouch, Input, input, instantiate, IPhysics2DContact, Node, Prefab, Sprite, Vec3 } from 'cc';
+import { _decorator, Animation, CCString, Collider2D, Component, Contact2DType, EventKeyboard, EventTouch, Input, input, instantiate, IPhysics2DContact, Node, Prefab, RigidBody2D, Sprite, Vec3 } from 'cc';
 import { Reward, RewardType } from './Reward';
 import { GameManager } from './GameManager';
 import { LifeCountUI } from './UI/LifeCountUI';
 const { ccclass, property } = _decorator;
 
 //表示两种子弹的状态
- enum shootType{
+enum shootType {
     OneShoot,
     TwoShoot,
     NONE
@@ -15,196 +15,205 @@ const { ccclass, property } = _decorator;
 export class Player extends Component {
     //设置子弹的发射时间
     @property
-    shootRate:number = 0.5;
+    shootRate: number = 0.5;
 
-    shootTime:number = 0;
+    shootTime: number = 0;
 
     //获取第一种子弹的预制体;
     @property(Prefab)
-    bullet1Prefab:Prefab =null;
+    bullet1Prefab: Prefab = null;
 
     @property(Node)
-    bulletParent:Node =null;
+    bulletParent: Node = null;
 
     //用来定位位置
     @property(Node)
-    position1:Node = null;
+    position1: Node = null;
 
     @property
-    shootType:shootType =shootType.OneShoot;
+    shootType: shootType = shootType.OneShoot;
 
     //设置玩家的碰撞
-    collider:Collider2D =null;
+    collider: Collider2D = null;
 
     //第二个子弹的信息
-     @property(Prefab)
-    bullet2Prefab:Prefab =null;
-     @property(Node)
-    position2:Node = null;
-     @property(Node)
-    position3:Node = null;
+    @property(Prefab)
+    bullet2Prefab: Prefab = null;
+    @property(Node)
+    position2: Node = null;
+    @property(Node)
+    position3: Node = null;
 
     //添加玩家的血量
     @property
-    lifeCount:number =3;
+    lifeCount: number = 3;
     //对动画组件的引用
     @property(Animation)
-    anim:Animation =null;
+    anim: Animation = null;
     //不同动画
     @property(CCString)
-    animHit:string = "";
+    animHit: string = "";
     @property(CCString)
-    animDown:string = "";
+    animDown: string = "";
     //表示无敌的时间
     @property
-    invincibleTime:number =1;
+    invincibleTime: number = 1;
     //无敌时间的计时器
-    invincibleTimer:number =0;
+    invincibleTimer: number = 0;
     //设置表示是否处于无敌时间的状态
-    isinvincible:boolean =false;
+    isinvincible: boolean = false;
     //设置双发的奖励时间
     @property
-    twoShootTime: number =5;
-    twoShootTimer:number =0; //设置的计时器
+    twoShootTime: number = 5;
+    twoShootTimer: number = 0; //设置的计时器
 
     //设置玩家血量的ui
     @property(LifeCountUI)
-    lifeCountUI:LifeCountUI = null;
-    
+    lifeCountUI: LifeCountUI = null;
+
+    private canControl:boolean =true;
+
     protected onLoad(): void {
-        input.on(Input.EventType.TOUCH_MOVE,this.onTouchMove,this);
+        input.on(Input.EventType.TOUCH_MOVE, this.onTouchMove, this);
 
         //注册单个碰撞体的回调函数
-                this.collider = this.getComponent(Collider2D);
-                if(this.collider){
-                    this.collider.on(Contact2DType.BEGIN_CONTACT,this.onBeginContact,this);
-                }
+        this.collider = this.getComponent(Collider2D);
+        if (this.collider) {
+            this.collider.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
+        }
     }
 
     //on方法后加的东西是对子弹进行的一个销毁
     //方法回调之后是对于碰撞之后的动作进行编写
-        onBeginContact(selfCollider:Collider2D,otherCollider:Collider2D,contact:IPhysics2DContact|null){
-            const reward = otherCollider.getComponent(Reward);
-            if(reward){
-                this.onContactToReward(reward);
-                // //此时是奖励物品
-                // switch(reward.rewardType){
-                //     case RewardType.TwoShoot:
-                //         this.transitionToTwoShoot();
-                //         break;
-                //     case RewardType.Boom:
-                //         break;
-                // }
-            }else{
-                //此时是碰撞的敌人
-           this.onContatctToEnemy();    //调用面向敌人的碰撞
-            }
-            
+    onBeginContact(selfCollider: Collider2D, otherCollider: Collider2D, contact: IPhysics2DContact | null) {
+        const reward = otherCollider.getComponent(Reward);
+        if (reward) {
+            this.onContactToReward(reward);
+            // //此时是奖励物品
+            // switch(reward.rewardType){
+            //     case RewardType.TwoShoot:
+            //         this.transitionToTwoShoot();
+            //         break;
+            //     case RewardType.Boom:
+            //         break;
+            // }
+        } else {
+            //此时是碰撞的敌人
+            this.onContatctToEnemy();    //调用面向敌人的碰撞
         }
-        //设置上一个奖励物品,为了应对bug
-        lastReward:Reward =null;
 
-        onContactToReward(reward){
-            //防止多次触发奖励物品
-            if(reward == this.lastReward){
-                return;
-            }
-            this.lastReward =reward;
-            
-             //此时是奖励物品
-            switch(reward.rewardType){
-                case RewardType.TwoShoot:
-                 this.transitionToTwoShoot();
-                    break;
-                case RewardType.Boom:
-                    GameManager.getInstance().AddBoom();        //添加炸弹
-                        break;
+    }
+    //设置上一个奖励物品,为了应对bug
+    lastReward: Reward = null;
+
+    onContactToReward(reward) {
+        //防止多次触发奖励物品
+        if (reward == this.lastReward) {
+            return;
+        }
+        this.lastReward = reward;
+
+        //此时是奖励物品
+        switch (reward.rewardType) {
+            case RewardType.TwoShoot:
+                this.transitionToTwoShoot();
+                break;
+            case RewardType.Boom:
+                GameManager.getInstance().AddBoom();        //添加炸弹
+                break;
         }
         //将奖励物品进行销毁
-        reward.getComponent(Collider2D).enabled =false;     //将碰撞器禁用
-        reward.getComponent(Sprite).enabled =false;         //将显示禁用
+        reward.getComponent(Collider2D).enabled = false;     //将碰撞器禁用
+        reward.getComponent(Sprite).enabled = false;         //将显示禁用
     }
-        //切换双发模式
-        transitionToTwoShoot(){
-            //切换设计模式  
-            this.shootType = shootType.TwoShoot;
-            this.twoShootTimer = 0;
+    //切换双发模式
+    transitionToTwoShoot() {
+        //切换设计模式  
+        this.shootType = shootType.TwoShoot;
+        this.twoShootTimer = 0;
 
-        }
-        //切换单发模式
-        transitionToOneShoot(){
+    }
+    //切换单发模式
+    transitionToOneShoot() {
         this.shootType = shootType.OneShoot;
-            this.twoShootTimer = 0;
+        this.twoShootTimer = 0;
+    }
+
+
+    //面向敌人的碰撞
+    onContatctToEnemy() {
+        //处于无敌状态直接跳过
+        if (this.isinvincible) return;
+
+        this.isinvincible = true;
+        //无敌时间进行重置
+        this.invincibleTimer = 0;
+        // this.lifeCount -=1;          //更改为下面的代码
+        this.changeLifeCount(-1);
+
+        //血量变化时进行的动画播放
+        if (this.lifeCount > 0) {
+            this.anim.play(this.animHit);
+        } else {
+            this.anim.play(this.animDown);
         }
-
-
-        //面向敌人的碰撞
-        onContatctToEnemy(){
-            //处于无敌状态直接跳过
-            if(this.isinvincible)return;
-
-            this.isinvincible =true;
-            //无敌时间进行重置
-            this.invincibleTimer =0;
-            // this.lifeCount -=1;          //更改为下面的代码
-            this.changeLifeCount(-1);
-
-            //血量变化时进行的动画播放
-            if(this.lifeCount >0){
-                this.anim.play(this.animHit);
-            }else{
-                this.anim.play(this.animDown);
+        //血量为0的时候摧毁
+        if (this.lifeCount <= 0) {
+            this.shootType = shootType.NONE; //修改子弹的发射类型
+            if (this.collider) {  //如果是自身的collider就运行
+                this.collider.enabled = false;   //将自身的collider进行禁用
             }
-            //血量为0的时候摧毁
-            if(this.lifeCount<=0){
-                this.shootType =shootType.NONE; //修改子弹的发射类型
-                if(this.collider){  //如果是自身的collider就运行
-                    this.collider.enabled =false;   //将自身的collider进行禁用
-                }
-
-            }
+            //游戏结束
+            this.scheduleOnce(() =>{
+            GameManager.getInstance().gameOver();
+            },0.4);         //给一个延时的作用是让玩家被摧毁的动画播放完之后再进行结束ui的调用
         }
+    }
 
-        //设置一个方法,专门进行玩家血量的更改
-        changeLifeCount(count:number){
-            this.lifeCount += count;
-            this.lifeCountUI.updateUI(this.lifeCount);
-        }
+    //设置一个方法,专门进行玩家血量的更改
+    changeLifeCount(count: number) {
+        this.lifeCount += count;
+        this.lifeCountUI.updateUI(this.lifeCount);
+    }
 
     start() {
         this.lifeCountUI.updateUI(this.lifeCount);      //开始运行时将玩家血量传递到ui中
+
+        this.node.getComponent(RigidBody2D).enabled = true;
     }
 
 
     protected onDestroy(): void {
         //对输入事件进行注销
-    input.off(Input.EventType.TOUCH_MOVE,this.onTouchMove,this);
-    //对碰撞体的回调函数进行注销
-            if(this.collider){
-             this.collider.off(Contact2DType.BEGIN_CONTACT,this.onBeginContact,this);
-                }
+        input.off(Input.EventType.TOUCH_MOVE, this.onTouchMove, this);
+        //对碰撞体的回调函数进行注销
+        if (this.collider) {
+            this.collider.off(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
+        }
     }
-    onTouchMove(event:EventTouch){
+    //控制飞机的移动
+    onTouchMove(event: EventTouch) {
+        if(this.canControl==false) return;
         //当生命值小于1的时候,停止飞机的运行
-        if(this.lifeCount<1)return;
+        if (this.lifeCount < 1) return;
 
         const p = this.node.position;
         //得到x和y的偏移
         // this.node.setPosition(p.x+event.getDeltaX(),p.y+event.getDeltaY(),p.z);
 
-        const targetPosition = new Vec3(p.x+event.getDeltaX(),p.y+event.getDeltaY(),p.z)
+        const targetPosition = new Vec3(p.x + event.getDeltaX(), p.y + event.getDeltaY(), p.z)
 
         //控制移动的边界
-        if(targetPosition.x<-230){
+        if (targetPosition.x < -230) {
             targetPosition.x = -230;
         }
-        if(targetPosition.x>230){
+        if (targetPosition.x > 230) {
             targetPosition.x = 230;
         }
-        if(targetPosition.y<-380){
+        if (targetPosition.y < -380) {
             targetPosition.y = -380;
         }
-        if(targetPosition.y>380){
+        if (targetPosition.y > 380) {
             targetPosition.y = 380;
         }
         this.node.setPosition(targetPosition);
@@ -212,13 +221,13 @@ export class Player extends Component {
 
     update(deltaTime: number) {
         //对发射子弹的类型进行判断
-        switch(this.shootType){
+        switch (this.shootType) {
             case shootType.OneShoot:
                 this.oneShoot(deltaTime);
                 break;
             case shootType.TwoShoot:
                 this.twoShoot(deltaTime);
-            break;
+                break;
 
         }
         // this.shootTime += deltaTime;
@@ -230,43 +239,50 @@ export class Player extends Component {
         // }
 
         //处于无敌状态时要进行计时
-        if(this.isinvincible){
+        if (this.isinvincible) {
             this.invincibleTimer += deltaTime;
             //无敌时间达到持续的时间
-            if(this.invincibleTimer>this.invincibleTime){
-                this.isinvincible =false;
+            if (this.invincibleTimer > this.invincibleTime) {
+                this.isinvincible = false;
             }
         }
     }
     //定义第一种子弹的发射类似
-    oneShoot(deltaTime: number){
+    oneShoot(deltaTime: number) {
         this.shootTime += deltaTime;
-        if(this.shootTime>=this.shootRate){
+        if (this.shootTime >= this.shootRate) {
             this.shootTime = 0;  //将发射时间归零
-           const bullet1 = instantiate(this.bullet1Prefab);
-           this.bulletParent.addChild(bullet1);
-           bullet1.setWorldPosition(this.position1.worldPosition);
+            const bullet1 = instantiate(this.bullet1Prefab);
+            this.bulletParent.addChild(bullet1);
+            bullet1.setWorldPosition(this.position1.worldPosition);
 
+        }
     }
-}
-    twoShoot(deltaTime: number){
-        this.twoShootTimer +=deltaTime;     //控制双发子弹的射击间隔的
-        if(this.twoShootTimer>this.twoShootTime){
+    twoShoot(deltaTime: number) {
+        this.twoShootTimer += deltaTime;     //控制双发子弹的射击间隔的
+        if (this.twoShootTimer > this.twoShootTime) {
             this.transitionToOneShoot();    //切换成单发的模式
         }
 
         this.shootTime += deltaTime;        //控制每发子弹的射击间隔的
-        if(this.shootTime>=this.shootRate){
+        if (this.shootTime >= this.shootRate) {
             this.shootTime = 0;  //将发射时间归零
             //要实例化两个子弹
-           const bullet1 = instantiate(this.bullet2Prefab);
-           const bullet2 = instantiate(this.bullet2Prefab);
-           this.bulletParent.addChild(bullet1);
-           this.bulletParent.addChild(bullet2);
-           bullet1.setWorldPosition(this.position2.worldPosition);
-           bullet2.setWorldPosition(this.position3.worldPosition);
+            const bullet1 = instantiate(this.bullet2Prefab);
+            const bullet2 = instantiate(this.bullet2Prefab);
+            this.bulletParent.addChild(bullet1);
+            this.bulletParent.addChild(bullet2);
+            bullet1.setWorldPosition(this.position2.worldPosition);
+            bullet2.setWorldPosition(this.position3.worldPosition);
 
+        }
     }
+    //控制暂停时飞机的移动
+    disableControl(){
+        this.canControl =false;
+    }
+    enableControl(){
+        this.canControl =true;
     }
 }
 
